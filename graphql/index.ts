@@ -29,14 +29,25 @@ const typeDefs = `#graphql
 
   type Query {
     books: [Book]
+    book(isbn: String!): Book
     authors: [Author]
+    author(id: String!): Author
   }
 `
 
+type Resolver<T> = (parent: unknown, args: T) => unknown
+
+const bookResolver: Resolver<{ isbn: string }> = (_, { isbn }) =>
+  books.find((b) => b.ISBN === isbn)
+
+const authorResolver: Resolver<{ id: string }> = (_, { id }) =>
+  authors.find((a) => a.id === id)
 const resolvers = {
   Query: {
     books: () => books,
-    authors: () => authors
+    book: bookResolver,
+    authors: () => authors,
+    author: authorResolver
   },
   Book: {
     author: (book: (typeof books)[number]) =>
